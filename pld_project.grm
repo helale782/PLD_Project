@@ -1,0 +1,147 @@
+"Name"     = 'Enter the name of the grammar'
+"Author"   = 'Enter your name'
+"Version"  = 'The version of the grammar and/or language'
+"About"    = 'A short description of the grammar'
+
+"Start Symbol" = <Program>
+
+! -------------------------------------------------
+! Character Sets
+! -------------------------------------------------
+
+{String Chars} = {Printable} + {HT} - ["]
+
+! -------------------------------------------------
+! Terminals
+! -------------------------------------------------
+
+
+
+Identifier    = {Letter} ( {AlphaNumeric} | '-'{AlphaNumeric} )*
+StringLiteral = '"' {String Chars}* '"'
+              
+<type> ::= 'integer' | 'real' | 'boolean' | 'char' | 'string' 
+        
+<const_value> ::= Integer | Real | Boolean | Char | StringLiteral
+        
+! -------------------------------------------------
+! Rules
+! -------------------------------------------------
+
+! The grammar starts below
+
+<Program> ::= 'start' <stmt_lst> 'end'
+           
+<stmt_lst> ::= <stmt>
+    | <stmt> <stmt_lst>
+    
+<stmt> ::= <assign>
+    | <loop>
+    | <condition>
+    | <procedure>
+    | <function>
+    | <compound_stmt>
+    
+<var_decl> ::= 'var' <id_list> ':' <type> ';'
+    | 'var' <id_list> ':' <type> ';' <var_decl>
+    
+
+<id_list> ::= Identifier
+    | Identifier ',' <id_list>
+    
+<const_decl> ::= 'const' <const_def> ';'
+    | 'const' <const_def> ';' <const_decl>
+
+<const_def> ::= <const_name> '=' <const_value>
+    | <const_name> ':' <type> '=' <const_value>
+
+<const_name> ::= Identifier
+    
+<assign> ::= Identifier ':=' <val> ';'
+          
+<expr> ::= <rel_expr> 
+          
+<compound_stmt> ::= 'begin' <stmt_lst> 'end'
+    | 'begin' <stmt_lst> 'end' ';'
+   
+
+<loop> ::= <for_loop>
+        |<while_loop>
+        |<repeat>
+        
+<for_loop> ::= for <assign> to <val> do <stmt_lst>';'
+            
+<while_loop> ::= while <rel_expr> do <stmt_lst>';'
+              
+<repeat> ::= repeat <stmt_lst> until <rel_expr>
+          
+<condition> ::= <if_stmt>
+             |<case_stmt>
+             
+<if_stmt> ::= 'if' <rel_expr> 'then' <stmt_lst> 
+           | 'if' <rel_expr> 'then' <stmt_lst> 'else' <stmt_lst>
+           
+<case_stmt> ::= 'case' <expr> 'of' <case_item> | 'case' <expr> 'of' <case_item> ';' <case_item> 'end'
+
+<case_item> ::= <val> ':' <stmt_lst> 
+    | 'else' ':' <stmt_lst>  
+    
+<function> ::= 'function' <function_name> '(' <parameter_lst> ')' ':' <return_type> ';' 'begin' <function_body> 'end' ';'
+            !['const' <const_decl> ';']
+            !['var' <var_decl> ';']
+
+<parameter_lst> ::= <parameter> ';'|<parameter> ';' <parameter_lst>
+
+<parameter> ::= Identifier ':' <type>
+    | 'var' Identifier ':' <type>
+    | 'const' Identifier ':' <type>
+            
+<function_name> ::= Identifier
+                 
+<return_type> ::= <type>
+               
+<function_body> ::= <stmt_lst>
+    | <stmt_lst> 'Result' ':=' <expr> ';'
+    
+                 
+<procedure> ::= 'procedure' <proc_name> '(' <parameter_lst> ')' ';''begin' <proc_body> 'end' ';'
+    !['const' <const_decl> ';']
+    !['var' <var_decl> ';']
+    
+             
+<proc_name> ::= Identifier
+
+<proc_body> ::= <stmt_lst> 
+
+! <expr> ::= <pre_expr> | <mul_expr> | <add_expr> | <rel_expr> 
+        
+<rel_expr>  ::= <rel_expr> '>'  <add_expr> 
+               |  <rel_expr> '<'  <add_expr> 
+               |  <rel_expr> '<=' <add_expr> 
+               |  <rel_expr> '>=' <add_expr>
+               |  <rel_expr> '==' <add_expr>    !Equal
+               |  <rel_expr> '<>' <add_expr>    !Not equal
+               |  <add_expr> 
+
+<add_expr>     ::= <add_expr> '+' <mul_expr> 
+               |  <add_expr> '-' <mul_expr> 
+               |  <mul_expr>  
+
+<mul_expr>     ::= <mul_expr>  '*' <pre_expr> 
+               |  <mul_expr>  '/' <pre_expr> 
+               |  <pre_expr>  
+
+<pre_expr>  ::= '-' <val> 
+               | <val> 
+               | Identifier
+
+!Add more values to the rule below - as needed
+
+<val>       ::= Real
+               |Integer
+               |Boolean
+               
+               
+
+               
+           
